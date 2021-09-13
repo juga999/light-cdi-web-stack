@@ -1,6 +1,7 @@
 package juga999.lightcdiwebstack.impl.db.h2;
 
 import jakarta.annotation.PostConstruct;
+import juga999.lightcdiwebstack.impl.db.AbstractDataSource;
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.jdbi.v3.core.Jdbi;
 import org.slf4j.Logger;
@@ -10,7 +11,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class H2InMemoryDataSource extends H2DataSource {
+public class H2InMemoryDataSource extends AbstractDataSource {
 
     private static final Logger logger = LoggerFactory.getLogger(H2InMemoryDataSource.class);
 

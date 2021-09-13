@@ -1,20 +1,22 @@
-package juga999.lightcdiwebstack.impl.db.h2;
+package juga999.lightcdiwebstack.impl.db;
 
 import com.google.common.collect.Lists;
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import juga999.lightcdiwebstack.AppConfig;
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.h2.H2DatabasePlugin;
 
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-public class H2PersistentDataSource extends H2DataSource {
+@ApplicationScoped
+public class PooledDataSource extends AbstractDataSource {
 
     private String jdbcUrl;
 
@@ -37,17 +39,17 @@ public class H2PersistentDataSource extends H2DataSource {
 
     @PostConstruct
     void init() {
-        Path dataBaseDir = appConfig.getDataBaseDir();
-        String h2dbUrl = dataBaseDir.resolve("h2db").toAbsolutePath().toString();
-        jdbcUrl = "jdbc:h2:" + h2dbUrl + ";MODE=PostgreSQL";
+        jdbcUrl = appConfig.getJdbcUrl();
 
-        cp = JdbcConnectionPool.create(jdbcUrl, "", "");
+        if (jdbcUrl.startsWith("jdbc:h2")) {
+            cp = JdbcConnectionPool.create(jdbcUrl, "", "");
+            jdbi = Jdbi.create(cp);
+            initJdbi(jdbi).installPlugin(new H2DatabasePlugin());
+        } else {
+            throw new RuntimeException("Unsupported database connection string: " + jdbcUrl);
+        }
 
         applyMigrationScripts("db");
-
-        jdbi = Jdbi.create(cp);
-
-        initJdbi(jdbi);
 
         new ActiveConnectionsCollector().register();
     }

@@ -1,11 +1,9 @@
-package juga999.lightcdiwebstack.impl.db.h2;
+package juga999.lightcdiwebstack.impl.db;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import juga999.lightcdiwebstack.meta.db.DataSource;
 import org.h2.tools.RunScript;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.h2.H2DatabasePlugin;
 import org.jdbi.v3.gson2.Gson2Plugin;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import org.slf4j.Logger;
@@ -25,10 +23,9 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@ApplicationScoped
-public abstract class H2DataSource implements DataSource {
+public abstract class AbstractDataSource implements DataSource {
 
-    private static final Logger logger = LoggerFactory.getLogger(H2DataSource.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractDataSource.class);
 
     private static final ThreadLocal<Handle> threadTransactionHandle = new ThreadLocal<>();
 
@@ -83,8 +80,8 @@ public abstract class H2DataSource implements DataSource {
         }
     }
 
-    protected void initJdbi(Jdbi jdbi) {
-        jdbi.installPlugin(new H2DatabasePlugin())
+    protected Jdbi initJdbi(Jdbi jdbi) {
+        return jdbi
                 .installPlugin(new SqlObjectPlugin())
                 .installPlugin(new Gson2Plugin());
     }

@@ -6,8 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Properties;
 
 @ApplicationScoped
@@ -33,17 +31,15 @@ public class AppConfig {
         return Integer.valueOf(props.getProperty("port"));
     }
 
-    public Path getDataBaseDir() {
-        return Paths.get(props.getProperty("databaseDir"));
+    public String getJdbcUrl() {
+        return props.getProperty("jdbcUrl");
     }
 
     public String getSecret() {
         return props.getProperty("secret");
     }
 
-    public Path getContentDir() { return Paths.get(props.getProperty("contentDir"));}
-
-    public Integer getSignageStreamTiming() {
-        return Integer.valueOf(props.getProperty("signageStreamTiming"));
+    public Properties getProperties() {
+        return props;
     }
 }
